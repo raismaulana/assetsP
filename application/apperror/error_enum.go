@@ -10,5 +10,6 @@ const (
 	PasswordMustNotEmpty           ErrorType = "ER400 password must not empty"          //
 	ERR500                         ErrorType = "ER500 %s"                               //
 	ERR400                         ErrorType = "ER400 %s"                               //
-	EmailAlreadyExist              ErrorType = "ER1000 email already exist"             //
+	EmailAlreadyExist              ErrorType = "ER400 email already exist"              //
+	UnsupportedImageFormat         ErrorType = "ER400 unsupported image format"         //
 )

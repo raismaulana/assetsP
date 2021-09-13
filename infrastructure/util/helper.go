@@ -27,8 +27,8 @@ func GetValidationErrorMessage(err error) error {
 		return apperror.FailUnmarshalResponseBodyError
 	}
 	var errorMessages []string
-	for i, e := range errs {
-		errorMessages[i] = e.Translate(Trans)
+	for _, e := range errs {
+		errorMessages = append(errorMessages, e.Translate(Trans))
 	}
 	errorMessage := strings.Join(errorMessages, " \n")
 	return apperror.ERR400.Var(errorMessage)
