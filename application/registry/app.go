@@ -8,17 +8,20 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/go-redis/redis/v8"
 	"github.com/raismaulana/assetsP/application"
+	"github.com/raismaulana/assetsP/controller/imageapi"
 	"github.com/raismaulana/assetsP/gateway/master"
 	"github.com/raismaulana/assetsP/infrastructure/auth"
 	"github.com/raismaulana/assetsP/infrastructure/envconfig"
 	"github.com/raismaulana/assetsP/infrastructure/log"
 	"github.com/raismaulana/assetsP/infrastructure/server"
+	"github.com/raismaulana/assetsP/usecase/uploadimage"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type app struct {
 	server.GinHTTPHandler
+	imageApiController imageapi.Controller
 	// TODO Another controller will added here ... <<<<<<
 }
 
@@ -30,13 +33,14 @@ func NewApp() func() application.RegistryContract {
 	return func() application.RegistryContract {
 
 		env := setupEnv()
-		jwtToken := setupJWTToken(env)
-		db := setupDB(env)
-		rdb := setupRedis(env)
+		// jwtToken := setupJWTToken(env)
+		// db := setupDB(env)
+		// rdb := setupRedis(env)
 		httpHandler := setupHTTPHandler(env)
-		enforcer := setupCasbinEnforcer()
+		// enforcer := setupCasbinEnforcer()
 
-		datasource, err := master.NewMasterGateway(ctx, env, db, rdb, jwtToken)
+		// datasource, err := master.NewMasterGateway(ctx, env, db, rdb, jwtToken)
+		datasource, err := master.NewMasterGateway2(ctx, env)
 		if err != nil {
 			log.Error(ctx, "%v", err.Error())
 			os.Exit(1)
@@ -44,6 +48,13 @@ func NewApp() func() application.RegistryContract {
 
 		return &app{
 			GinHTTPHandler: httpHandler,
+			imageApiController: imageapi.Controller{
+				// JWTToken:          *jwtToken,
+				Env: *env,
+				// Enforcer:          *enforcer,
+				Router:            httpHandler.Router,
+				UploadImageInport: uploadimage.NewUsecase(datasource),
+			},
 			// TODO another controller will added here ... <<<<<<
 		}
 
@@ -51,6 +62,7 @@ func NewApp() func() application.RegistryContract {
 }
 
 func (r *app) SetupController() {
+	r.imageApiController.RegisterRouter()
 	// TODO another router call will added here ... <<<<<<
 }
 

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	appMap := map[string]func() application.RegistryContract{
-		"usingdb": registry.NewApp(),
+		"app": registry.NewApp(),
 	}
 
 	flag.Parse()

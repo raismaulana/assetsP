@@ -10,10 +10,11 @@ db_user: postgres
 db_password: postgres
 
 # app
-app_name: blogP
-base_url: http://localhost:8080 #end without slash
-base_url_v1: http://localhost:8080/v1 #end without slash
-port: "8080"
+app_name: assetsP
+base_url: http://localhost:8181 #end without slash
+base_url_v1: http://localhost:8181/v1 #end without slash
+port: "8181"
+
 
 # auth
 secretkey: i'm secret key

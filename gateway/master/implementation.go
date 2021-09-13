@@ -17,6 +17,9 @@ type masterGateway struct {
 	redisGateway.RedisGateway
 	shared.SharedGateway
 }
+type masterGateway2 struct {
+	shared.SharedGateway
+}
 
 func NewMasterGateway(ctx context.Context, env *envconfig.EnvConfig, db *gorm.DB, rdb *redis.Client, jwtToken *auth.JWTToken) (*masterGateway, error) {
 	rdbmsG, err := rdbms.NewRDBMSGateway(ctx, env, db)
@@ -29,6 +32,12 @@ func NewMasterGateway(ctx context.Context, env *envconfig.EnvConfig, db *gorm.DB
 	return &masterGateway{
 		RDBMSGateway:  *rdbmsG,
 		RedisGateway:  *redisG,
+		SharedGateway: *sharedG,
+	}, nil
+}
+func NewMasterGateway2(ctx context.Context, env *envconfig.EnvConfig) (*masterGateway2, error) {
+	sharedG := shared.NewSharedGateway(env, &auth.JWTToken{})
+	return &masterGateway2{
 		SharedGateway: *sharedG,
 	}, nil
 }

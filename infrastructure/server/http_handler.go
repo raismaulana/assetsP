@@ -26,22 +26,9 @@ func NewGinHTTPHandler(address string) (GinHTTPHandler, error) {
 
 	router := gin.Default()
 	router.Static("/public", "./public")
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		en := en.New()
-		uni := ut.New(en, en)
-		// this is usually know or extracted from http 'Accept-Language' header
-		// also see uni.FindTranslator(...)
-		util.Trans, _ = uni.GetTranslator("en")
-		en_translations.RegisterDefaultTranslations(v, util.Trans)
-		v.RegisterTagNameFunc(func(field reflect.StructField) string {
-			name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
-			if name == "-" {
-				return ""
-			}
-			return name
-		})
 
-	}
+	registerValidator()
+
 	// CORS
 	router.Use(cors.New(cors.Config{
 		ExposeHeaders:   []string{"Data-Length"},
@@ -66,4 +53,31 @@ func NewGinHTTPHandler(address string) (GinHTTPHandler, error) {
 // RunApplication is implementation of RegistryContract.RunApplication()
 func (r *GinHTTPHandler) RunApplication() {
 	r.RunWithGracefullyShutdown()
+}
+
+// Register custom validator to gin binding
+func registerValidator() {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		en := en.New()
+		uni := ut.New(en, en)
+		// this is usually know or extracted from http 'Accept-Language' header
+		// also see uni.FindTranslator(...)
+		util.Trans, _ = uni.GetTranslator("en")
+		en_translations.RegisterDefaultTranslations(v, util.Trans)
+		v.RegisterTagNameFunc(func(field reflect.StructField) string {
+			name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
+			if name == "-" {
+				return ""
+			}
+			return name
+		})
+		v.RegisterTagNameFunc(func(field reflect.StructField) string {
+			name := strings.SplitN(field.Tag.Get("form"), ",", 2)[0]
+			if name == "-" {
+				return ""
+			}
+			return name
+		})
+
+	}
 }
