@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/h2non/bimg"
 	"github.com/raismaulana/assetsP/application/apperror"
 	"github.com/raismaulana/assetsP/domain/service"
 	"github.com/raismaulana/assetsP/infrastructure/auth"
@@ -59,23 +58,23 @@ func (r *SharedGateway) VerifyPassword(ctx context.Context, req service.VerifyPa
 }
 
 // The mime type of the image is changed, it is compressed and then saved in the specified folder.
-func (r *SharedGateway) ImageProcessingAndUpload(ctx context.Context, buffer []byte, quality int, dirname string, filename string, extension bimg.ImageType) error {
-	log.Info(ctx, "called")
+// func (r *SharedGateway) ImageProcessingAndUpload(ctx context.Context, buffer []byte, quality int, dirname string, filename string, extension bimg.ImageType) error {
+// 	log.Info(ctx, "called")
 
-	converted, err := bimg.NewImage(buffer).Convert(extension)
-	if err != nil {
-		return apperror.ERR500.Var(err)
-	}
+// 	converted, err := bimg.NewImage(buffer).Convert(extension)
+// 	if err != nil {
+// 		return apperror.ERR500.Var(err)
+// 	}
 
-	processed, err := bimg.NewImage(converted).Process(bimg.Options{Quality: quality})
-	if err != nil {
-		return apperror.ERR500.Var(err)
-	}
+// 	processed, err := bimg.NewImage(converted).Process(bimg.Options{Quality: quality})
+// 	if err != nil {
+// 		return apperror.ERR500.Var(err)
+// 	}
 
-	err = bimg.Write("."+dirname+filename, processed)
-	if err != nil {
-		return apperror.ERR500.Var(err)
-	}
+// 	err = bimg.Write("."+dirname+filename, processed)
+// 	if err != nil {
+// 		return apperror.ERR500.Var(err)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

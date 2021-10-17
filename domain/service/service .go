@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-
-	"github.com/h2non/bimg"
 )
 
 type GetBaseURLRepo interface {
@@ -26,6 +24,7 @@ type VerifyPasswordServiceRequest struct {
 	PlainPassword  string
 	HashedPassword string
 }
-type ImageProcessingAndUploadRepo interface {
-	ImageProcessingAndUpload(ctx context.Context, buffer []byte, quality int, dirname string, filename string, extension bimg.ImageType) error
-}
+
+// type ImageProcessingAndUploadRepo interface {
+// 	ImageProcessingAndUpload(ctx context.Context, buffer []byte, quality int, dirname string, filename string, extension bimg.ImageType) error
+// }
