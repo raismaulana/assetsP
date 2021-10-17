@@ -1,10 +1,10 @@
 package uploadimage
 
 import (
+	"bytes"
 	"context"
-	"io"
 
-	"github.com/h2non/bimg"
+	"github.com/disintegration/imaging"
 	"github.com/raismaulana/assetsP/application/apperror"
 	"github.com/raismaulana/assetsP/infrastructure/util"
 )
@@ -28,8 +28,8 @@ func (r *uploadImageInteractor) Execute(ctx context.Context, req InportRequest) 
 	res := &InportResponse{}
 
 	filename := r.outport.GenerateRandomString(ctx)
-	path := "/public/images/"
-	fullpath := path + filename
+	path := "./public/images/"
+	fullpath := path + filename + ".jpg"
 
 	file, err := req.Image.Open()
 	if err != nil {
@@ -37,19 +37,30 @@ func (r *uploadImageInteractor) Execute(ctx context.Context, req InportRequest) 
 	}
 	defer file.Close()
 
-	buffer, err := io.ReadAll(file)
+	srcImage, err := imaging.Decode(file, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, apperror.ERR500.Var(err.Error())
 	}
 
-	err = util.CreateDirectoryIfNotExist("." + path)
+	err = util.CreateDirectoryIfNotExist(path)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.outport.ImageProcessingAndUpload(ctx, buffer, 50, path, filename, bimg.WEBP)
+	buffer := &bytes.Buffer{}
+	err = imaging.Encode(buffer, srcImage, imaging.JPEG, imaging.JPEGQuality(50))
 	if err != nil {
-		return nil, err
+		return nil, apperror.ERR500.Var(err.Error())
+	}
+
+	img, err := imaging.Decode(buffer)
+	if err != nil {
+		return nil, apperror.ERR500.Var(err.Error())
+	}
+
+	err = imaging.Save(img, fullpath, imaging.JPEGQuality(50))
+	if err != nil {
+		return nil, apperror.ERR500.Var(err.Error())
 	}
 
 	res.Location = r.outport.GetBaseURL(ctx) + fullpath

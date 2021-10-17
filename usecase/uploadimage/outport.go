@@ -6,5 +6,4 @@ import "github.com/raismaulana/assetsP/domain/service"
 type Outport interface {
 	service.GenerateRandomStringService
 	service.GetBaseURLRepo
-	service.ImageProcessingAndUploadRepo
 }
